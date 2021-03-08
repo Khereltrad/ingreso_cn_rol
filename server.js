@@ -1,11 +1,12 @@
 const express = require("express");
-const session = require('express-session');
-const flash = require('connect-flash');
 const app = express();
 const port = 8000;
 
+const session = require('express-session');
+const flash = require('connect-flash');
+
 app
-.use(session({secret: 'mipropiaclave'}))
+.use(session({secret:'M11.n1.5am'}))
 .use(flash())  // para los posts
 .use( express.json() )
 .use( express.urlencoded({ extended: true }) )   // Para las vistas
@@ -14,5 +15,4 @@ app
 .use('/static', express.static("static"))  // importar las rutas
 .use(require('./routes/auth'))
 .use(require('./routes/routes'))
-.listen(port, function() {
-  console.log('Escuchando en el puerto ' + port); });
+.listen( port, () => console.log(`Listening on port: ${port}`) );
