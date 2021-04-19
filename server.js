@@ -12,7 +12,7 @@ app
 .use( express.urlencoded({ extended: true }) )   // Para las vistas
 .set('views', __dirname + '/views')
 .set('view engine', 'ejs')   // para archivos estaticos
-.use('/static', express.static("static"))  // importar las rutas
+.use('/static', express.static("static")) 
 .use(require('./routes/auth'))
 .use(require('./routes/routes'))
 .listen( port, () => console.log(`Listening on port: ${port}`) );

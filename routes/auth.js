@@ -1,8 +1,6 @@
-/**
- * Acá van las rutas que manejan la autentificación de nuestra App
- */
+
 const { Router } = require('express');
-const { User } = require('../db');
+const { User } = require('../data/db');
 const bcrypt = require('bcrypt');
 const router = Router();
 
@@ -13,59 +11,26 @@ router
 
 // 2. Ruta para registrar nuevos usuarios (formulario de registro)
 .post('/registernow', async (req, res) => {
-      // Primero encriptamos la contraseña
-      const password_encrypted = await bcrypt.hash(req.body.password, 10);
-
-      try {
-            console.log('pass', password_encrypted);
-            // verificacion de primer usuario como admin
+  const password_encrypted = await bcrypt.hash(req.body.password, 10);
+  try {
             const usuario = await User.findAndCountAll();
             let rol_usuario = "USUARIO";
-            if(usuario.count==0){
-              rol_usuario = "ADMIN"
-            };
+             if(usuario.count==0){ rol_usuario = "ADMIN" };
             // creacion de usuario
-            const user = await User.create({
-                name: req.body.name,
-                lastname: req.body.lastname,
-                rol: rol_usuario,
-                email: req.body.email,
-                password: password_encrypted
-            });     
-            // guard      amos el usuario creado en session
+            const user = await User.create({ name: req.body.name,  lastname: req.body.lastname, rol: rol_usuario, email: req.body.email, password: password_encrypted });
             req.session.user = user;
 
-        } catch(err) {  // En el caso de algún error, guardamos los errores en "errors", y redirigimos al formulario
-            for (var key in err.errors) { req.flash('errors', err.errors[key].message);}
-            return res.redirect('/login');
-        };
-    res.redirect('/');   // si la validación es correcta, redirigimos al usuario al HOME
+  } catch(err) { for (var key in err.errors) { req.flash('errors', err.errors[key].message);} return res.redirect('/login'); };
+    res.redirect('/index');   // si la validación es correcta, redirigimos al usuario al HOME
 });
 
-// 3. Ruta para que los usuarios que ya existen, entren a la plataforma (formulario de login)
 router.post('/login', async (req, res) => {
-  // Primero intentamos recuperar el usuario por su email
   const user = await User.findOne({where: {email: req.body.email}});
-  if (user == null) {
-    // en caso de que ese email no exista
-    req.flash('errors', 'Usuario inexistente o contraseña incorrecta');
-    return res.redirect('/login');
-  }
-  // Después comparamos contraseñas
+  if (user == null) { req.flash('errors', 'Usuario inexistente o contraseña incorrecta'); return res.redirect('/login');}
   var isCorrect = await bcrypt.compare(req.body.password, user.password);
-  if (isCorrect == false) {
-    // en caso de que ese email no exista
-    req.flash('errors', 'Usuario inexistente o contraseña incorrecta');
-    return res.redirect('/login');
-  }
-
-  // Finalmente redirigimos al home
+  if (isCorrect == false) { req.flash('errors', 'Usuario inexistente o contraseña incorrecta'); return res.redirect('/login');}
   req.session.user = user;
-  res.redirect('/')
+  res.redirect('/index')
 });
-
-// 4. Ruta para cerrar sesión
-router
-.get('/logout', async (req, res) => { req.session.user = null; res.redirect('/login'); });
 
 module.exports = router;
