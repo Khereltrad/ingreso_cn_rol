@@ -20,7 +20,7 @@ router
             const user = await User.create({ name: req.body.name,  lastname: req.body.lastname, rol: rol_usuario, email: req.body.email, password: password_encrypted });
             req.session.user = user;
 
-  } catch(err) { for (var key in err.errors) { req.flash('errors', err.errors[key].message);} return res.redirect('/login'); };
+  } catch(err) { for (var key in err.errors) { req.flash('errors', err.errors[key].message);} return res.redirect('/register'); };
     res.redirect('/index');   // si la validación es correcta, redirigimos al usuario al HOME
 });
 
