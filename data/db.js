@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const { hasMany,belongsTo } = require('sequelize');
-const sql = new Sequelize('testing','root','Mirune.1812#265464', { host: 'localhost', dialect: 'mysql'});
+const sql = new Sequelize('testing','root','pw', { host: 'localhost', dialect: 'mysql'});
 
 const User = sql.define('User', {
   id        : { type: Sequelize.INTEGER,  primaryKey: true, autoIncrement: true },
